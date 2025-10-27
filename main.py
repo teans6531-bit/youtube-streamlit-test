@@ -1,13 +1,10 @@
 import streamlit as st
 import numpy as np
 
-st.title("🧱 Streamlit 迷路ゲーム")
+st.set_page_config(page_title="迷路ゲーム", layout="centered")
+st.title("🕹️ Streamlit迷路ゲーム（ボタン操作）")
 
-# --- セッション状態を利用して位置を記憶 ---
-if "player_pos" not in st.session_state:
-    st.session_state.player_pos = [1, 1]
-
-# --- 迷路データを定義（1=壁, 0=道, 2=ゴール） ---
+# --- 迷路定義 ---
 maze = np.array([
     [1,1,1,1,1,1,1],
     [1,0,0,0,1,0,1],
@@ -18,63 +15,80 @@ maze = np.array([
     [1,1,1,1,1,1,1],
 ])
 
-# --- プレイヤーの位置取得 ---
+# --- 状態保持 ---
+if "player_pos" not in st.session_state:
+    st.session_state.player_pos = [1, 1]
+
 x, y = st.session_state.player_pos
 
-# --- 表示用の文字マップを作成 ---
-display_maze = maze.copy()
-display_maze[x, y] = 9  # 9=プレイヤー
+# --- プレイヤー移動処理 ---
+def move(dx, dy):
+    new_x, new_y = x + dx, y + dy
+    if maze[new_x, new_y] != 1:
+        st.session_state.player_pos = [new_x, new_y]
 
-emoji_map = {
-    0: "⬜️",  # 通路
-    1: "⬛️",  # 壁
-    2: "🏁",  # ゴール
-    9: "😀",  # プレイヤー
-}
+# --- 迷路描画 ---
+display = maze.copy()
+px, py = st.session_state.player_pos
+display[px, py] = 9
 
-maze_lines = []
-for row in display_maze:
-    maze_lines.append("".join(emoji_map[cell] for cell in row))
-maze_display = "\n".join(maze_lines)
+emoji = {0: "⬜️", 1: "⬛️", 2: "🏁", 9: "😀"}
+maze_html = "<br>".join("".join(emoji[c] for c in row) for row in display)
 
-# --- HTMLを使って中央＆等幅フォントで表示 ---
 st.markdown(
     f"""
-    <div style="text-align:center; font-size: 24px; line-height: 1.1; font-family: monospace;">
-        {maze_display.replace('\n', '<br>')}
+    <div style="
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        border:3px solid #666;
+        width:260px;
+        height:260px;
+        margin:auto;
+        background-color:#111;
+        border-radius:10px;
+        font-size:24px;
+        font-family:monospace;
+        line-height:1.1;
+        color:white;
+        text-align:center;
+    ">
+        <div>{maze_html}</div>
     </div>
     """,
     unsafe_allow_html=True
 )
 
-# --- 移動ボタン（中央揃え） ---
-col_left, col_up, col_right = st.columns(3)
-with col_up:
-    if st.button("⬆️ 上"):
-        if maze[x-1, y] != 1:
-            st.session_state.player_pos[0] -= 1
+# --- ボタンUI（中央揃え＋スペース追加） ---
+st.markdown("### 🎮 操作ボタン")
 
-col1, col_down, col3 = st.columns(3)
-with col1:
-    if st.button("⬅️ 左"):
-        if maze[x, y-1] != 1:
-            st.session_state.player_pos[1] -= 1
-with col3:
-    if st.button("➡️ 右"):
-        if maze[x, y+1] != 1:
-            st.session_state.player_pos[1] += 1
-with col_down:
-    if st.button("⬇️ 下"):
-        if maze[x+1, y] != 1:
-            st.session_state.player_pos[0] += 1
+# ↑ボタン
+col_center = st.columns([1, 1, 1, 1, 1])
+with col_center[2]:
+    if st.button("⬆️", use_container_width=True):
+        move(-1, 0)
+
+# ← → ボタン（間を広げた）
+col_lr = st.columns([2, 1, 0.5, 1, 2])  # ←この「0.5」で間が広がる！
+with col_lr[1]:
+    if st.button("⬅️", use_container_width=True):
+        move(0, -1)
+with col_lr[3]:
+    if st.button("➡️", use_container_width=True):
+        move(0, 1)
+
+# ↓ボタン
+col_down = st.columns([1, 1, 1, 1, 1])
+with col_down[2]:
+    if st.button("⬇️", use_container_width=True):
+        move(1, 0)
 
 # --- ゴール判定 ---
-x, y = st.session_state.player_pos
-if maze[x, y] == 2:
-    st.success("🎉 ゴールしました！！")
-    if st.button("もう一度あそぶ"):
+if maze[px, py] == 2:
+    st.success("🎉 ゴールしました！")
+    if st.button("もう一度"):
         st.session_state.player_pos = [1, 1]
-
+        st.rerun()
 
 
 # import streamlit as st
