@@ -1,7 +1,7 @@
 import streamlit as st
 import time
 
-st.title("ストリームリット 入門")
+st.title("streamlit 入門")
 
 st.write('プログレスバーの表示')
 
