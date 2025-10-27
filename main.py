@@ -26,21 +26,35 @@ display_maze = maze.copy()
 display_maze[x, y] = 9  # 9=プレイヤー
 
 emoji_map = {
-    0: "⬜",  # 通路
-    1: "⬛",  # 壁
+    0: "⬜️",  # 通路
+    1: "⬛️",  # 壁
     2: "🏁",  # ゴール
     9: "😀",  # プレイヤー
 }
 
-maze_display = "\n".join("".join(emoji_map[cell] for cell in row) for row in display_maze)
-st.markdown(f"<pre style='font-size:20px'>{maze_display}</pre>", unsafe_allow_html=True)
+maze_lines = []
+for row in display_maze:
+    maze_lines.append("".join(emoji_map[cell] for cell in row))
+maze_display = "\n".join(maze_lines)
 
-# --- 移動ボタン ---
-col1, col2, col3 = st.columns(3)
-with col2:
+# --- HTMLを使って中央＆等幅フォントで表示 ---
+st.markdown(
+    f"""
+    <div style="text-align:center; font-size: 24px; line-height: 1.1; font-family: monospace;">
+        {maze_display.replace('\n', '<br>')}
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+# --- 移動ボタン（中央揃え） ---
+col_left, col_up, col_right = st.columns(3)
+with col_up:
     if st.button("⬆️ 上"):
         if maze[x-1, y] != 1:
             st.session_state.player_pos[0] -= 1
+
+col1, col_down, col3 = st.columns(3)
 with col1:
     if st.button("⬅️ 左"):
         if maze[x, y-1] != 1:
@@ -49,7 +63,6 @@ with col3:
     if st.button("➡️ 右"):
         if maze[x, y+1] != 1:
             st.session_state.player_pos[1] += 1
-_, col_down, _ = st.columns(3)
 with col_down:
     if st.button("⬇️ 下"):
         if maze[x+1, y] != 1:
