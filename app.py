@@ -27,7 +27,12 @@ selected_companies = [
     company for company in tickers.keys()
     if st.sidebar.checkbox(company.capitalize(), True)
 ]
-
+price_min, price_max = st.sidebar.slider(
+    "表示する株価の範囲 (USD)",
+    min_value=0,
+    max_value=3500,
+    value=(0, 3500)
+)
 
 @st.cache_data
 def get_data(days, tickers):
