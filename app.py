@@ -31,7 +31,8 @@ price_min, price_max = st.sidebar.slider(
     "表示する株価の範囲 (USD)",
     min_value=0,
     max_value=3500,
-    value=(0, 3500)
+    value=(0, 500),
+    step=5
 )
 
 @st.cache_data
@@ -53,13 +54,20 @@ df = get_data(days, tickers)
 data = df.reset_index().melt('Date', var_name='Company', value_name='Closing Price')
 filtered_data = data[data["Company"].isin(selected_companies)]
 
+st.markdown(
+    f"### 株価表示範囲： **${price_min} ～ ${price_max} USD**"
+)
 
 chart = (
     alt.Chart(filtered_data)
     .mark_line(point=True)
     .encode(
         x=alt.X('Date:T', title='Date'),
-        y=alt.Y('Closing Price:Q', title='Closing Price (USD)'),
+        y=alt.Y(
+            'Closing Price:Q',
+            title='Closing Price (USD)',
+            scale=alt.Scale(domain=[price_min, price_max])
+        ),
         color=alt.Color('Company:N', title='Company'),
         tooltip=['Date', 'Company', 'Closing Price']
     )
