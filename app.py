@@ -3,20 +3,16 @@ import yfinance as yf
 import altair as alt
 import streamlit as st
 
-# =============================
-# アプリタイトル
-# =============================
+
 st.title("株価表示")
 
-# =============================
-# サイドバー設定
-# =============================
+
 st.sidebar.header("⚙️ 設定")
 
 # スライダーで日数を選択（5〜60日の範囲）
 days = st.sidebar.slider("表示する日数", min_value=5, max_value=60, value=20, step=5)
 
-# 対象企業
+
 tickers = {
     'apple': 'AAPL',
     'microsoft': 'MSFT',
@@ -25,16 +21,14 @@ tickers = {
     'meta': 'META',
 }
 
-# チェックボックスで企業選択
+
 st.sidebar.subheader("📊 表示する企業を選択")
 selected_companies = [
     company for company in tickers.keys()
     if st.sidebar.checkbox(company.capitalize(), True)
 ]
 
-# =============================
-# データ取得関数
-# =============================
+
 @st.cache_data
 def get_data(days, tickers):
     df = pd.DataFrame()
@@ -49,16 +43,12 @@ def get_data(days, tickers):
     return df
 
 
-# =============================
-# データ取得と整形
-# =============================
+
 df = get_data(days, tickers)
 data = df.reset_index().melt('Date', var_name='Company', value_name='Closing Price')
 filtered_data = data[data["Company"].isin(selected_companies)]
 
-# =============================
-# チャート作成
-# =============================
+
 chart = (
     alt.Chart(filtered_data)
     .mark_line(point=True)
@@ -76,11 +66,9 @@ chart = (
     .interactive()
 )
 
-# =============================
-# 表示
-# =============================
+
 st.altair_chart(chart, use_container_width=True)
 
-# データテーブルも表示（オプション）
+
 st.write("### 📋 データプレビュー")
 st.dataframe(filtered_data)
