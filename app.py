@@ -7,10 +7,10 @@ import streamlit as st
 st.title("株価表示")
 
 
-st.sidebar.header("⚙️ 設定")
+st.sidebar.header("設定")
 
 # スライダーで日数を選択（5〜60日の範囲）
-days = st.sidebar.slider("表示する日数", min_value=5, max_value=60, value=20, step=5)
+days = st.sidebar.slider("表示する日数を選択", min_value=5, max_value=60, value=20, step=5)
 
 
 tickers = {
@@ -22,7 +22,7 @@ tickers = {
 }
 
 
-st.sidebar.subheader("📊 表示する企業を選択")
+st.sidebar.subheader("表示する企業を選択")
 selected_companies = [
     company for company in tickers.keys()
     if st.sidebar.checkbox(company.capitalize(), True)
@@ -70,5 +70,5 @@ chart = (
 st.altair_chart(chart, use_container_width=True)
 
 
-st.write("### 📋 データプレビュー")
+st.write("データプレビュー")
 st.dataframe(filtered_data)
