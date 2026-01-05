@@ -21,7 +21,6 @@ WIN_WORD_CANDIDATES = [
 ]
 
 
-
 if "player_pos" not in st.session_state:
     st.session_state.player_pos = 0
 
