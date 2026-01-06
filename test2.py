@@ -52,12 +52,13 @@ if "board_letters" not in st.session_state:
 
 st.set_page_config(layout="wide")
 st.title("熟語すごろく")
-st.header("サイコロを振って盤面を進もう、赤マスに止まると文字を失うよ！")
-st.info(f"勝利条件：『{st.session_state.win_word}』を完全一致で作る")
+st.info(f"勝利条件：『{st.session_state.win_word}』をで作ってみよう")
+
+
 
 
 left_col, right_col = st.columns([1, 2])
-
+st.header("サイコロを振って盤面を進もう、赤マスに止まると文字を失うよ！")
 
 with left_col:
     st.subheader("🎲 サイコロ")
@@ -185,7 +186,6 @@ for row in range(0, len(letters), 2):
                     st.session_state.selected_letters.append(letter)
 
 st.sidebar.divider()
-
 
 st.sidebar.subheader("選択中")
 if st.session_state.selected_letters:
